@@ -1,0 +1,56 @@
+*Author: Mathias Jimenéz Villamar.
+*Date: 02/10/2024
+*Target: Make a stock searcher design program.
+***************************************
+PARAMETERS hisname, hissurname, pass_user, numbers, histype, one
+DO WHILE .t. 
+set delete on 
+define window ingr from 1,10 to 16,100 title "                                                                                                   Raybox.CO | Hardware Tools"
+define window ingreso from 13,10 to 28,100 title "Stock Browser"
+define window options from 1,130 to 18,160 title "Choose Options"
+**********************************************************
+    USE rbox_database
+    store 0 to op, op2, op3, sp1, sp, buttom
+    STORE 1 TO op1
+    store space(13) to nam
+    activate window ingr
+        @0,12 say "C:\raybox_sys\pict_sys/rbox_pict.jpg" bitmap isometric size 54,57
+    activate window ingreso
+        browse fields art_code:h="Code", descript:h="Description", amount:h="Amount", price:h="Price" noappend noedit nodelete
+     activate window options
+        @1,2 get op1 function "*rv '<' To;'>' To;=;Between" size 2, 3, 2
+            read
+            if readkey()=12
+                MESSAGEBOX("Press Ok to exit", 0+32, "Raybox Info")
+                DEACTIVATE WINDOW ingreso, options, ingr
+                CLEAR
+                DO raybox_principal WITH hisname, hissurname, pass_user, numbers, histype, one
+            endif
+                    if op1>0 and op1<4
+                         @2,14 get op3 spinner 1,1,100
+                             READ 
+                    else
+                            @2,14 get op spinner 1,1,100
+                            @4,14 get op2 spinner 1,1,100 valid op2>op and op<op2 error "Higher than the previous one"
+                                READ 
+                    ENDIF
+                        @8,15 get buttom function "*h BROWSE" size 3, 2, 3
+                          READ 
+                          do case
+                            case op1=1
+                                set filter to amount<op3
+                             case op1=2
+                                set filter to amount>op3
+                             case op1=3
+                                 set filter to amount=op3
+                             case op1=4
+                                 set filter to amount>op3 and amount<op2
+                          endcase
+                    activate window ingreso
+                         browse fields art_code:h="Code", descript:h="Description", amount:h="Amount", price:h="Price" noappend noedit nodelete
+                      READ 
+                      SHOW gets 
+                      LOOP                            
+    activate window ingreso
+        browse fields art_code:h="Code", descript:h="Description", amount:h="Amount", price:h="Price" noappend noedit nodelete
+enddo

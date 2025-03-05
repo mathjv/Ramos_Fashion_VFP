@@ -1,0 +1,34 @@
+PARAMETERS hisname, hissurname, pass_user, numbers, histype, one
+CLEAR
+SET ESCAPE OFF
+USE fash_historial
+define window inpt from 5,50 to 30,135 title "Ramos Fashion - Jade Ramos ADMINISTRADORA"+"                                                                                                                       "+cdow(date())+", "+mdy(date())
+    STORE space(20) TO reppass, pass, pass_entered
+    STORE DATE() to day
+ACTIVATE WINDOW inpt
+    @9,1 say "C:\fashion\pict_sys/perfil/clave.jfif" bitmap isometric size 12,12
+    @1,2 say "Ramos Fashion | Ropa Y Moda" font "Verdana",20
+    @4,2 say "Proceso de cambio de Clave. Usuario: "+hisname font "Verdana",12
+    @22,43 say "Ramos Fashion Company. Derechos Reservados" font "Verdana", 8 color b/w**
+    @7,12 say "Ingrese Clave: " font "Arial black",10 get pass_entered valid ALLTRIM(pass_entered)==ALLTRIM(pass_user) and !EMPTY(pass_entered) error "Enter your password corretly." font "Noto Sans",8
+        READ 
+        IF readkey()=12
+            messagebox("Recibido",0+32,"Ramos Fashion | Ropa Y Moda")
+            DEACTIVATE WINDOW inpt
+            CLEAR
+            DO fash_principal WITH hisname, hissurname, numbers, histype, one, pass_user
+        ENDIF 
+    @10,15 say "Cambiar Clave: " font "Arial black",10 get pass valid not EMPTY(pass) and LEN(ALLTRIM(pass))>=5 error "Add your new password. It must be greater than or equal to 5"
+    @12,15 say "Repetir Clave: " font "Arial black",10 get reppass valid ALLTRIM(pass)==ALLTRIM(reppass) and !EMPTY(reppass) error "Passwords doesn't match."     
+            READ 
+            APPEND BLANK
+                replace username WITH ALLTRIM(hisname)
+                replace surname WITH ALLTRIM(hissurname)
+                replace passkey_ch WITH ALLTRIM(reppass)
+                replace date WITH day
+            USE fash_usuarios
+                LOCATE FOR name=hisname
+                    replace date WITH day
+                    replace password WITH ALLTRIM(reppass)
+                    DEACTIVATE WINDOW inpt
+                    DO fash_sesion
